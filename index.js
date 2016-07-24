@@ -17,17 +17,24 @@ if (fs.existsSync(virtualPortNamesPath)) {
 
 let outputs = []
 
+function sendToOutputs (message) {
+  outputs.forEach(output => output.send(message))
+}
+
 const Clock = require('./lib/Clock')
 const clock = new Clock()
 clock.start()
 
 const Sequencer = require('./lib/sequencer')
 const sequencer = new Sequencer()
-sequencer.on('started', () => outputs.forEach(output => output.send([messages.SEQ_START])))
-sequencer.on('stopped', () => outputs.forEach(output => output.send([messages.SEQ_STOP])))
+const sequencerEvents = {
+  started: () => sendToOutputs([messages.SEQ_START]),
+  stopped: () => sendToOutputs([messages.SEQ_STOP])
+}
+_.forEach(sequencerEvents, (action, event) => sequencer.on(event, action))
 
 clock.on('tick', tick => {
-  outputs.forEach(output => output.send([messages.SEQ_TICK]))
+  sendToOutputs([messages.SEQ_TICK])
 })
 
 const configurations = [
