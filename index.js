@@ -24,6 +24,9 @@ function sendToOutputs (message) {
 const Clock = require('./lib/Clock')
 const clock = new Clock()
 clock.start()
+clock.on('tick', tick => {
+  sendToOutputs([messages.SEQ_TICK])
+})
 
 const Sequencer = require('./lib/sequencer')
 const sequencer = new Sequencer()
@@ -32,10 +35,6 @@ const sequencerEvents = {
   stopped: () => sendToOutputs([messages.SEQ_STOP])
 }
 _.forEach(sequencerEvents, (action, event) => sequencer.on(event, action))
-
-clock.on('tick', tick => {
-  sendToOutputs([messages.SEQ_TICK])
-})
 
 const configurations = [
   {
