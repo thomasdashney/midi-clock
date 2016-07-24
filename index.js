@@ -2,7 +2,7 @@
  * Entry-point for command-line version
  */
 
-const portManager = require('./lib/portManager')
+const { portManager } = require('./lib/services')
 const fs = require('fs')
 
 // load configurations
