@@ -24,8 +24,8 @@ function sendToOutputs (message) {
 const Clock = require('./lib/Clock')
 const clock = new Clock()
 clock.start()
-clock.on('tick', tick => {
-  sendToOutputs([messages.SEQ_TICK])
+clock.on('sync', () => {
+  sendToOutputs([messages.TIMING_CLOCK])
 })
 
 const Sequencer = require('./lib/sequencer')
