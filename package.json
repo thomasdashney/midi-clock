@@ -1,0 +1,16 @@
+{
+  "name": "midi-sequencer",
+  "version": "0.0.1",
+  "description": "MIDI Sequencer",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Thomas Dashney",
+  "license": "ISC",]
+  "dependencies": {
+    "lodash": "^4.13.1",
+    "midi": "^0.9.5",
+    "vorpal": "^1.11.2"
+  }
+}
