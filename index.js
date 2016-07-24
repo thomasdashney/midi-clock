@@ -2,7 +2,7 @@
  * Entry-point for command-line version
  */
 
-const { portManager } = require('./lib/services')
+const { portManager } = require('./src/services')
 const fs = require('fs')
 
 // load configurations
@@ -12,18 +12,18 @@ if (fs.existsSync(virtualPortNamesPath)) {
 }
 
 // core
-const Clock = require('./lib/Clock')
+const Clock = require('./src/Clock')
 const clock = new Clock()
 clock.start()
 
-const Sequencer = require('./lib/sequencer')
+const Sequencer = require('./src/sequencer')
 const sequencer = new Sequencer(clock)
 
-const SequencerDispatcher = require('./lib/SequencerDispatcher')
+const SequencerDispatcher = require('./src/SequencerDispatcher')
 const sequencerDispatcher = new SequencerDispatcher(sequencer)
 sequencerDispatcher.listen()
 
 // cli
-const CLI = require('./lib/cli')
+const CLI = require('./src/cli')
 const cli = new CLI({ clock, sequencer, sequencerDispatcher })
 cli.start()
