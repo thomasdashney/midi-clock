@@ -24,12 +24,14 @@ function sendToOutputs (message) {
 const Clock = require('./lib/Clock')
 const clock = new Clock()
 clock.start()
-clock.on('sync', () => {
+
+const Sequencer = require('./lib/sequencer')
+const sequencer = new Sequencer(clock)
+
+sequencer.on('sync', () => {
   sendToOutputs([messages.TIMING_CLOCK])
 })
 
-const Sequencer = require('./lib/sequencer')
-const sequencer = new Sequencer()
 const sequencerEvents = {
   started: () => sendToOutputs([messages.SEQ_START]),
   stopped: () => sendToOutputs([messages.SEQ_STOP]),
