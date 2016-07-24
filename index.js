@@ -66,5 +66,18 @@ vorpal
   })
 
 vorpal
+  .command('set-bpm', 'Sets the bpm of the sequencer')
+  .action((args, done) => {
+    cmd().prompt({
+      type: 'input',
+      name: 'bpm',
+      message: 'Enter a bpm: '
+    }).then(results => {
+      clock.bpm = results.bpm
+      done()
+    })
+  })
+
+vorpal
   .delimiter('sequencer >')
   .show()
