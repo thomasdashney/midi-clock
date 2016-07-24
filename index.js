@@ -5,8 +5,15 @@
 const portManager = require('./lib/portManager')
 const messages = require('./lib/midiMessages')
 const vorpal = require('vorpal')()
+const fs = require('fs')
 const cmd = () => vorpal.activeCommand
 const _ = require('lodash')
+
+// load configurations
+const virtualPortNamesPath = __dirname + '/config/virtualPorts.js'
+if (fs.existsSync(virtualPortNamesPath)) {
+  require(virtualPortNamesPath).forEach(portManager.createVirtualOutputPort)
+}
 
 const Clock = require('./lib/Clock')
 const clock = new Clock()
