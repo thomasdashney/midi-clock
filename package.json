@@ -4,7 +4,8 @@
   "description": "MIDI Sequencer",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "./node_modules/.bin/mocha"
   },
   "author": "Thomas Dashney",
   "license": "ISC",
@@ -13,5 +14,9 @@
     "midi": "^0.9.5",
     "require-directory": "^2.1.1",
     "vorpal": "^1.11.2"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
   }
 }
