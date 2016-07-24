@@ -3,7 +3,6 @@
  */
 
 const portManager = require('./lib/portManager')
-const messages = require('./lib/midiMessages')
 const vorpal = require('vorpal')()
 const fs = require('fs')
 const cmd = () => vorpal.activeCommand
@@ -15,12 +14,7 @@ if (fs.existsSync(virtualPortNamesPath)) {
   require(virtualPortNamesPath).forEach(portManager.createVirtualOutputPort)
 }
 
-let outputs = []
-
-function sendToOutputs (message) {
-  outputs.forEach(output => output.send(message))
-}
-
+// core
 const Clock = require('./lib/Clock')
 const clock = new Clock()
 clock.start()
@@ -28,17 +22,11 @@ clock.start()
 const Sequencer = require('./lib/sequencer')
 const sequencer = new Sequencer(clock)
 
-sequencer.on('sync', () => {
-  sendToOutputs([messages.TIMING_CLOCK])
-})
+const SequencerDispatcher = require('./lib/SequencerDispatcher')
+const sequencerDispatcher = new SequencerDispatcher(sequencer)
+sequencerDispatcher.listen()
 
-const sequencerEvents = {
-  started: () => sendToOutputs([messages.SEQ_START]),
-  stopped: () => sendToOutputs([messages.SEQ_STOP]),
-  continued: () => sendToOutputs([messages.SEQ_CONTINUE])
-}
-_.forEach(sequencerEvents, (action, event) => sequencer.on(event, action))
-
+// config commands
 const configurations = [
   {
     name: 'Clock Forwards',
@@ -52,14 +40,11 @@ const configurations = [
           return {
             name: port.name,
             value: port,
-            checked: _.includes(outputs, port)
+            checked: _.includes(sequencerDispatcher.outputs, port)
           }
         })
       }).then(results => {
-        const updatedOutputs = _.xor(outputs, results.outputs)
-        outputs = results.outputs
-        const syncMessage = sequencer.status === Sequencer.PLAYING ? messages.SEQ_START : messages.SEQ_STOP
-        updatedOutputs.forEach(output => output.send([syncMessage]))
+        sequencerDispatcher.outputs = results.outputs
         done()
       })
     }
