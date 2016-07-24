@@ -47,9 +47,10 @@ const configurations = [
           }
         })
       }).then(results => {
+        const updatedOutputs = _.xor(outputs, results.outputs)
         outputs = results.outputs
         const syncMessage = sequencer.isRunning ? messages.SEQ_START : messages.SEQ_STOP
-        outputs.forEach(output => output.send([syncMessage]))
+        updatedOutputs.forEach(output => output.send([syncMessage]))
         done()
       })
     }
