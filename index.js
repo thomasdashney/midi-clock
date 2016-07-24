@@ -32,7 +32,8 @@ const Sequencer = require('./lib/sequencer')
 const sequencer = new Sequencer()
 const sequencerEvents = {
   started: () => sendToOutputs([messages.SEQ_START]),
-  stopped: () => sendToOutputs([messages.SEQ_STOP])
+  stopped: () => sendToOutputs([messages.SEQ_STOP]),
+  continued: () => sendToOutputs([messages.SEQ_CONTINUE])
 }
 _.forEach(sequencerEvents, (action, event) => sequencer.on(event, action))
 
@@ -77,19 +78,20 @@ vorpal
     })
   })
 
-vorpal
-  .command('start', 'Starts the sequencer')
-  .action((args, done) => {
-    sequencer.start()
-    done()
-  })
+const sequencerCommands = {
+  start: sequencer.start,
+  stop: sequencer.stop,
+  continue: sequencer.continue
+}
 
-vorpal
-  .command('stop', 'Stops the sequencer')
-  .action((args, done) => {
-    sequencer.stop()
-    done()
-  })
+_.forEach(sequencerCommands, (seqFn, command) => {
+  vorpal
+    .command(command, `${_.upperFirst(command)} the sequencer`)
+    .action((args, done) => {
+      seqFn.call(sequencer)
+      done()
+    })
+})
 
 vorpal
   .command('bpm <bpm>', 'Sets the bpm of the sequencer')
