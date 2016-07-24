@@ -24,13 +24,17 @@ const configurations = [
       const outputPorts = portManager.getOutputPorts()
       cmd().prompt({
         type: 'checkbox',
-        name: 'portNames',
+        name: 'outputs',
         message: 'Select MIDI ports to forward the clock to',
-        choices: _.map(outputPorts, 'name')
-      }).then(results => {
-        clockOutputs = _.filter(outputPorts, port => {
-          return _.includes(results.portNames, port.name)
+        choices: _.map(outputPorts, port => {
+          return {
+            name: port.name,
+            value: port,
+            checked: _.includes(clockOutputs, port)
+          }
         })
+      }).then(results => {
+        clockOutputs = results.outputs
         done()
       })
     }
