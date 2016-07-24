@@ -15,13 +15,19 @@ if (fs.existsSync(virtualPortNamesPath)) {
   require(virtualPortNamesPath).forEach(portManager.createVirtualOutputPort)
 }
 
+let outputs = []
+
 const Clock = require('./lib/Clock')
 const clock = new Clock()
 clock.start()
 
-let clockOutputs = []
-clock.on('tick', () => {
-  clockOutputs.forEach(output => output.send([messages.SEQ_TICK]))
+const Sequencer = require('./lib/sequencer')
+const sequencer = new Sequencer()
+sequencer.on('started', () => outputs.forEach(output => output.send([messages.SEQ_START])))
+sequencer.on('stopped', () => outputs.forEach(output => output.send([messages.SEQ_STOP])))
+
+clock.on('tick', tick => {
+  outputs.forEach(output => output.send([messages.SEQ_TICK]))
 })
 
 const configurations = [
@@ -37,11 +43,13 @@ const configurations = [
           return {
             name: port.name,
             value: port,
-            checked: _.includes(clockOutputs, port)
+            checked: _.includes(outputs, port)
           }
         })
       }).then(results => {
-        clockOutputs = results.outputs
+        outputs = results.outputs
+        const syncMessage = sequencer.isRunning ? messages.SEQ_START : messages.SEQ_STOP
+        outputs.forEach(output => output.send([syncMessage]))
         done()
       })
     }
@@ -65,14 +73,14 @@ vorpal
 vorpal
   .command('start', 'Starts the sequencer')
   .action((args, done) => {
-    clockOutputs.forEach(output => output.send([messages.SEQ_START]))
+    sequencer.start()
     done()
   })
 
 vorpal
   .command('stop', 'Stops the sequencer')
   .action((args, done) => {
-    clockOutputs.forEach(output => output.send([messages.SEQ_STOP]))
+    sequencer.stop()
     done()
   })
 
