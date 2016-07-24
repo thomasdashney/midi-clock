@@ -94,7 +94,7 @@ _.forEach(sequencerCommands, (seqFn, command) => {
 })
 
 vorpal
-  .command('bpm <bpm>', 'Sets the bpm of the sequencer')
+  .command('bpm <bpm>', 'Sets the bpm of the clock')
   .action((args, done) => {
     clock.bpm = args.bpm
     done()
