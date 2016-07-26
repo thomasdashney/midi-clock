@@ -19,11 +19,11 @@ clock.start()
 const Sequencer = require('./lib/sequencer')
 const sequencer = new Sequencer(clock)
 
-const SequencerDispatcher = require('./lib/SequencerDispatcher')
-const sequencerDispatcher = new SequencerDispatcher(sequencer)
-sequencerDispatcher.listen()
+const MidiDispatcher = require('./lib/MidiDispatcher')
+const midiDispatcher = new MidiDispatcher({ sequencer, clock })
+midiDispatcher.listen()
 
 // cli
 const CLI = require('./lib/cli')
-const cli = new CLI({ clock, sequencer, sequencerDispatcher })
+const cli = new CLI({ clock, sequencer, midiDispatcher })
 cli.start()
