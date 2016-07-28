@@ -16,6 +16,9 @@ const Clock = require('./lib/Clock')
 const clock = new Clock()
 clock.start()
 
+const TapClock = require('./lib/TapClock')
+const tapClock = new TapClock(clock)
+
 const Sequencer = require('./lib/sequencer')
 const sequencer = new Sequencer(clock)
 
@@ -25,5 +28,5 @@ midiDispatcher.listen()
 
 // cli
 const CLI = require('./lib/cli')
-const cli = new CLI({ clock, sequencer, midiDispatcher })
+const cli = new CLI({ clock, tapClock, sequencer, midiDispatcher })
 cli.start()
