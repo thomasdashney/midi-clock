@@ -8,7 +8,7 @@ const Sequencer = require('../lib/Sequencer')
 
 class MockClock extends EventEmitter {
   tick () {
-    this.emit('tick')
+    this.emit('tick', {})
   }
 }
 

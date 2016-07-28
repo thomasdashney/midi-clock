@@ -84,13 +84,13 @@ describe('Clock', () => {
         _.times(3, () => {
           this.clock.tick()
           sinon.assert.calledOnce(this.ticked)
-          sinon.assert.calledWith(this.ticked, false)
+          sinon.assert.calledWith(this.ticked, {})
           this.ticked.reset()
         })
 
         this.clock.tick()
         sinon.assert.calledOnce(this.ticked)
-        sinon.assert.calledWith(this.ticked, true)
+        sinon.assert.calledWith(this.ticked, { sync: true })
         this.ticked.reset()
       })
     })
