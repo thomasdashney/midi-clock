@@ -6,6 +6,7 @@ const EventEmitter = require('events')
 const sinon = require('sinon')
 const _ = require('lodash')
 const { assert } = require('chai')
+const { standards } = require('../lib/constants')
 
 class MockClock extends EventEmitter {
   tick (payload) {
@@ -15,9 +16,14 @@ class MockClock extends EventEmitter {
 
 describe('TapTempoController', () => {
   beforeEach(() => {
+    this.now = new Date()
+    this.naturalClock = sinon.useFakeTimers(this.now.getTime())
     this.clock = new MockClock()
     this.controller = new TapTempoController(this.clock)
   })
+
+  afterEach(() => this.naturalClock.restore())
+
   describe('tap', () => {
     let resetBeatNextSyncSpy
     beforeEach(() => {
@@ -107,7 +113,7 @@ describe('TapTempoController', () => {
       })
     })
 
-    context('just finished a beat', () => {
+    context('just passed a beat', () => {
       let nextBeat
       beforeEach(() => {
         const lastBeat = standards.TICKS_PER_BEAT * 6
@@ -118,6 +124,62 @@ describe('TapTempoController', () => {
 
       it('returns the next beat', () => {
         assert.equal(this.controller.getTargetBeat(), nextBeat)
+      })
+    })
+  })
+
+  describe('getTimeSinceLastBeat', () => {
+    const timeSinceLastTap = 400
+    beforeEach(() => {
+      this.controller.lastTap = {
+        time: new Date(new Date().getTime() - timeSinceLastTap)
+      }
+    })
+
+    context('no anchor beat', () => {
+      it('returns the time since the last tap', () => {
+        assert.equal(this.controller.getTimeSinceLastBeat(), timeSinceLastTap)
+      })
+    })
+
+    context('with anchor beat', () => {
+      beforeEach(() => {
+        this.controller.anchor = standards.TICKS_PER_BEAT * 8
+      })
+
+      context('the anchor beat was less than a beat ago', () => {
+        beforeEach(() => {
+          this.controller.ticksSinceBeatOne = this.controller.anchor + standards.TICKS_PER_BEAT - 1
+        })
+        it('returns the time since the last tap', () => {
+          assert.equal(this.controller.getTimeSinceLastBeat(), timeSinceLastTap)
+        })
+      })
+
+      context('the anchor beat was at least a beat ago', () => {
+        const timeSinceLastBeat = 400
+        const timeSinceBeatBeforeLast = 900
+        beforeEach(() => {
+          this.controller.ticksSinceBeatOne = this.controller.anchor + standards.TICKS_PER_BEAT
+          const now = new Date()
+          this.controller.beatTimeHistory = [
+            new Date(now.getTime() - timeSinceBeatBeforeLast),
+            new Date(now.getTime() - timeSinceLastBeat)]
+        })
+
+        context('just passed a beat', () => {
+          it('returns the time of the beat before last', () => {
+            assert.equal(this.controller.getTimeSinceLastBeat(), timeSinceBeatBeforeLast)
+          })
+        })
+        context('almost reached a beat', () => {
+          beforeEach(() => {
+            this.controller.ticksSinceBeatOne += (standards.TICKS_PER_BEAT / 2) + 1
+          })
+          it('returns the time of the last beat', () => {
+            assert.equal(this.controller.getTimeSinceLastBeat(), timeSinceLastBeat)
+          })
+        })
       })
     })
   })
