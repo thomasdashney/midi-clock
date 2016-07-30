@@ -76,6 +76,19 @@ describe('TapTempoController', () => {
           assert.equal(this.controller.ticksSinceBeatOne, tickNum + 1)
         })
       })
+
+      it('tracks the the time that the last two beats occurred at', () => {
+        const firstBeatTime = new Date()
+        this.controller.onTick({ beat: true })
+        assert.deepEqual(this.controller.beatTimeHistory, [firstBeatTime])
+        this.controller.onTick({})
+        assert.deepEqual(this.controller.beatTimeHistory, [firstBeatTime])
+        const timeBetweenBeats = 400
+        this.naturalClock.tick(timeBetweenBeats)
+        this.controller.onTick({ beat: true })
+        const secondBeatTime = new Date()
+        assert.deepEqual(this.controller.beatTimeHistory, [firstBeatTime, secondBeatTime])
+      })
     })
   })
 
