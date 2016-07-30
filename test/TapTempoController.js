@@ -78,4 +78,34 @@ describe('TapTempoController', () => {
       })
     })
   })
+
+  describe('getTargetBeat', () => {
+    context('almost reached a beat', () => {
+      let nextBeat
+      beforeEach(() => {
+        const lastBeat = standards.TICKS_PER_BEAT * 6
+        nextBeat = lastBeat + standards.TICKS_PER_BEAT
+        const currentTick = lastBeat + ((nextBeat - lastBeat) / 2)
+        this.controller.ticksSinceBeatOne = currentTick
+      })
+
+      it('returns the beat after next', () => {
+        assert.equal(this.controller.getTargetBeat(), nextBeat + standards.TICKS_PER_BEAT)
+      })
+    })
+
+    context('just finished a beat', () => {
+      let nextBeat
+      beforeEach(() => {
+        const lastBeat = standards.TICKS_PER_BEAT * 6
+        nextBeat = lastBeat + standards.TICKS_PER_BEAT
+        const currentTick = lastBeat + ((nextBeat - lastBeat) / 2) - 1
+        this.controller.ticksSinceBeatOne = currentTick
+      })
+
+      it('returns the next beat', () => {
+        assert.equal(this.controller.getTargetBeat(), nextBeat)
+      })
+    })
+  })
 })
