@@ -131,6 +131,24 @@ describe('TapTempoController', () => {
         const secondBeatTime = new Date()
         assert.deepEqual(this.controller.beatTimeHistory, [firstBeatTime, secondBeatTime])
       })
+
+      context('anchor beat is reached', () => {
+        const initialBpm = 120
+        const anchorBpm = 126
+        const anchorBeat = 12564
+        const ticksUntilAnchorBeat = 40
+        beforeEach(() => {
+          this.clock.bpm = initialBpm
+          this.controller.anchor = { beat: anchorBeat, bpm: anchorBpm }
+          this.controller.ticksSinceBeatOne = anchorBeat - ticksUntilAnchorBeat
+        })
+        it('sets the clock bpm to the anchor bpm', () => {
+          _.times(ticksUntilAnchorBeat - 1, () => this.clock.tick({}))
+          assert.equal(this.clock.bpm, initialBpm)
+          this.clock.tick({})
+          assert.equal(this.clock.bpm, anchorBpm)
+        })
+      })
     })
   })
 
