@@ -30,6 +30,13 @@ describe('TapTempoController', () => {
       resetBeatNextSyncSpy = sinon.spy(this.controller.beatClock, 'resetBeatNextSync')
     })
 
+    it('it sets a lastTap object', () => {
+      this.controller.tap()
+      assert.deepEqual(this.controller.lastTap, {
+        time: this.now
+      })
+    })
+
     describe('first call', () => {
       beforeEach(() => this.controller.tap())
       it('resets the beat counter on next sync', () => {
