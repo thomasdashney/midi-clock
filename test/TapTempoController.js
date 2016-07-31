@@ -78,6 +78,13 @@ describe('TapTempoController', () => {
         this.controller.tap()
         assert.equal(this.clock.bpm, expectedBpm)
       })
+
+      it('sets the anchor bpm', () => {
+        const ticksPerMs = standards.TICKS_PER_BEAT / timeSinceLastBeat
+        const expectedBpm = ticksPerMs * standards.MILLISECONDS_PER_MINUTE * (1 / standards.TICKS_PER_BEAT)
+        this.controller.tap()
+        assert.equal(this.controller.anchor.bpm, expectedBpm)
+      })
     })
   })
 
