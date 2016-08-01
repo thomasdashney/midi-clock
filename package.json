@@ -1,7 +1,7 @@
 {
-  "name": "midi-sequencer",
+  "name": "midi-clock",
   "version": "0.0.1",
-  "description": "MIDI Sequencer",
+  "description": "MIDI Clock",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
