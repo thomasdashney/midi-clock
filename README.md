@@ -4,9 +4,11 @@ Experimentation with MIDI clock and tap tempo in javascript
 
 ## Installation
 From the command line:
-`git clone https://github.com/thomasdashney/midi-clock.git`
-`cd midi-clock`
-`npm install`
+```
+git clone https://github.com/thomasdashney/midi-clock.git
+cd midi-clock
+npm install
+```
 
 ## Usage
 * `npm start`
